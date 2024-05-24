@@ -50,10 +50,10 @@ async def receive_model_info(update: Update, context: ContextTypes.DEFAULT_TYPE)
                  "When I should use this machine learning model?"
         print(prompt)
 
-        system_prompt = "Give answer in Russian language."
+        system_prompt = "Give answer in Russian language. Do not use latex formatting in formulas, try more human readable format but formulas are very important. "
         reply = text_request_to_gpt(prompt, system_prompt)
 
-        await update.message.reply_text(reply)
+        await update.message.reply_text(reply, parse_mode="Markdown")
     await update.message.reply_text(
         "Можем посмотреть примеры кода по этой теме или попробовать сгенерировать решение с твоими данными.",
         reply_markup=markup_spec_model,
@@ -80,7 +80,7 @@ async def code_example(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         system_prompt = "Give answer in Russian language and the code in python language."
         reply = text_request_to_gpt(prompt, system_prompt)
 
-        await update.message.reply_text(reply)
+        await update.message.reply_text(reply, parse_mode="Markdown")
         await update.message.reply_text(
             "Если код не подходит, можно попробовать сгенерировать его заново.",
             reply_markup=markup_code_example,
