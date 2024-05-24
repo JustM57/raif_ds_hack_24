@@ -1,15 +1,9 @@
-from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
+from telegram import ReplyKeyboardMarkup, Update
 from telegram.ext import (
-    Application,
-    CommandHandler,
     ContextTypes,
-    ConversationHandler,
-    MessageHandler,
-    filters,
 )
 from config.openai_client import client
-from utils.helpers import FINAL_CODE_EXAMPLE, USER_DATA_LOAD, CODE_EXAMPLE
-
+from utils.helpers import FINAL_CODE_EXAMPLE, CODE_EXAMPLE, CODE_EXAMPLE_WITH_USER_DATA
 
 code_example_buttons = [
     ["Посмотреть другой пример", "Назад", "Done"],
@@ -100,4 +94,4 @@ async def code_example(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
             reply_markup=markup_user_data_code_example,
         )
 
-        return USER_DATA_LOAD
+        return CODE_EXAMPLE_WITH_USER_DATA

@@ -1,22 +1,4 @@
-from telegram.ext import MessageHandler, CommandHandler, filters
 from config.telegram_bot import application
-import base64
-from telegram import Update
-from config.openai_client import client
-# from handlers.message_handlers import chatgpt_reply
-# from handlers.command_handlers import start_reply
-#
-# # Регистрация обработчика текстовых сообщений
-# message_handler = MessageHandler(filters.TEXT & ~filters.COMMAND, chatgpt_reply)
-# application.add_handler(message_handler)
-#
-# # Регистрация обработчика команд
-# start_command_handler = CommandHandler("start", start_reply)
-# application.add_handler(start_command_handler)
-#
-# # Запуск бота
-# application.run_polling()
-
 
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from telegram.ext import (
@@ -28,15 +10,14 @@ from telegram.ext import (
     filters,
 )
 
-from handlers.image_to_gpt_handlers import code_example_with_user_data
+from handlers.image_to_gpt_handlers import code_example_with_user_data, chart_to_code
 from handlers.text_to_gpt_handlers import code_example, receive_model_info
-from utils.helpers import FINAL_CODE_EXAMPLE_WITH_USER_DATA, CODE_EXAMPLE_WITH_USER_DATA, USER_DATA_LOAD, \
-    FINAL_CODE_EXAMPLE, CODE_EXAMPLE, CHOOSING_MODEL, CHOOSING_MODEL_CLASS, CHOOSING_PREPROCESSING_CLASS, \
-    CHOOSING_DIRECTION
-
+from utils.helpers import CODE_EXAMPLE_WITH_USER_DATA, \
+    FINAL_CODE_EXAMPLE, CODE_EXAMPLE, CHOOSING_MODEL, CHOOSING_MODEL_CLASS, \
+    CHOOSING_DIRECTION, CHART_TO_CODE
 
 direction_buttons = [
-    ["Препроцессинг", "Модели"],
+    ["Код графика по фото", "Справочник моделей"],
     ["Done"],
 ]
 markup_direction = ReplyKeyboardMarkup(direction_buttons, one_time_keyboard=True)
@@ -62,6 +43,11 @@ classic_models_buttons = [
 ]
 markup_classic_models = ReplyKeyboardMarkup(classic_models_buttons, one_time_keyboard=True)
 
+chart_load_buttons = [
+    ["Загрузить фото графика", "Назад", "Done"],
+]
+markup_chart_load = ReplyKeyboardMarkup(chart_load_buttons, one_time_keyboard=True)
+
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Start the conversation and ask user for input."""
@@ -85,10 +71,9 @@ async def first_stage(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
     if text == "Назад":
         text = context.user_data["first"]
     context.user_data["first"] = text
-    if text == "Препроцессинг":
-        # TODO: change markup
-        reply_markup = markup_back
-    elif text == "Модели":
+    if text == "Код графика по фото":
+        reply_markup = markup_chart_load
+    elif text == "Справочник моделей":
         reply_markup = markup_model_classes
     else:
         reply_markup = None
@@ -97,9 +82,9 @@ async def first_stage(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
         f"Вы выбрали {text.lower()}! Выбери интересующую тему.",
         reply_markup=reply_markup,
     )
-    if text == "Препроцессинг":
-        return CHOOSING_PREPROCESSING_CLASS
-    elif text == "Модели":
+    if text == "Код графика по фото":
+        return CHART_TO_CODE
+    elif text == "Справочник моделей":
         return CHOOSING_MODEL_CLASS
 
 
@@ -134,6 +119,15 @@ async def code_example_with_user_data_start(update: Update, context: ContextType
     return CODE_EXAMPLE_WITH_USER_DATA
 
 
+async def load_chart(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """."""
+    await update.message.reply_text(
+        "Загрузите картинку графика, который вы хотели бы воспроизвести в виде кода.",
+    )
+
+    return CHART_TO_CODE
+
+
 async def done(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Display the gathered info and end the conversation."""
     user_data = context.user_data
@@ -156,11 +150,17 @@ def main() -> None:
         states={
             CHOOSING_DIRECTION: [
                 MessageHandler(
-                    filters.Regex("^(Препроцессинг|Модели)$"), first_stage
+                    filters.Regex("^(Код графика по фото|Справочник моделей)$"), first_stage
                 ),
                 # MessageHandler(filters.Regex("^Something else...$"), custom_choice),
             ],
-            CHOOSING_PREPROCESSING_CLASS: [
+            CHART_TO_CODE: [
+                MessageHandler(
+                    filters.Regex("^Загрузить фото графика"), load_chart
+                ),
+                MessageHandler(
+                    filters.PHOTO | filters.Regex("^Посмотреть другой пример$"), chart_to_code
+                ),
                 MessageHandler(
                     filters.Regex("^Назад$"), start
                 ),
@@ -198,22 +198,12 @@ def main() -> None:
                     filters.Regex("^Назад$"), receive_model_info
                 ),
             ],
-            USER_DATA_LOAD: [
+            CODE_EXAMPLE_WITH_USER_DATA: [
                 MessageHandler(
                     filters.Regex("^Загрузить фото датасета$"), code_example_with_user_data_start
                 ),
                 MessageHandler(
-                    filters.Regex("^Назад$"), receive_model_info
-                ),
-            ],
-            CODE_EXAMPLE_WITH_USER_DATA: [
-                MessageHandler(
                     filters.PHOTO | filters.Regex("^Посмотреть другой пример$"), code_example_with_user_data
-                )
-            ],
-            FINAL_CODE_EXAMPLE_WITH_USER_DATA: [
-                MessageHandler(
-                    filters.Regex("^Посмотреть другой пример$"), code_example_with_user_data
                 ),
                 MessageHandler(
                     filters.Regex("^Назад$"), receive_model_info
