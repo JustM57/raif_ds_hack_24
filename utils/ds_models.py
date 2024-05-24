@@ -11,7 +11,7 @@ MODELS = {
     # "Компьютерное зрение": ["Convolutional Neural Network", "ResNet", "Детектирование объектов: YOLO",
     #                         "Сегментация: U-Net", "Vision Transformer", "Генеративные модели: Dall-E"],
     "Времянные ряды": ["Arima", "Facebook Prophet", "MLP based: NBEATS", "LSTM", "Temporal Fusion Transformer", "Deep AR"],
-    "NLP (текст)": ["LSTM", "BERT", "GPT", "Wor2Vec", "FastText"],
+    "NLP": ["LSTM", "BERT", "GPT", "Wor2Vec", "FastText"],
     # "Кластеризация": ["K Means", "Аггломеративная кластеризация", "Иерархическая кластеризация", "DBSCAN"],
     # "Обучение с подкреплением": ["Cross-Entropy Method", "Multi-Armed Bandit", "Q Learning и DQN", "Actor Critic",
     #                              "On Policy methods: PPO"],
