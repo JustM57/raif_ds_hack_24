@@ -16,6 +16,7 @@ MODELS = {
     # "Обучение с подкреплением": ["Cross-Entropy Method", "Multi-Armed Bandit", "Q Learning и DQN", "Actor Critic",
     #                              "On Policy methods: PPO"],
     # "Статистикa и A/B": ["Naive Bayes", "Generalized Linear Models (GLM)", "ANOVA", "T-test", "Коэффициенты корреляции"]
+    "Свой запрос...": [],
 }
 
 

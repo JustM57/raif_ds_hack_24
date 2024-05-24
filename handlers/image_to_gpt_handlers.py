@@ -50,7 +50,10 @@ async def code_example_with_user_data(update: Update, context: ContextTypes.DEFA
     reply = image_request_to_gpt(context.user_data["photo"].file_path, prompt)
 
     if reply != 'NO DATASET':
-        await update.message.reply_text(reply, parse_mode="Markdown")
+        try:
+            await update.message.reply_text(reply, parse_mode="Markdown")
+        except:
+            await update.message.reply_text(reply)
         await update.message.reply_text(
             "Если код не подходит, можно попробовать сгенерировать его заново.",
             reply_markup=markup_code_example,
@@ -81,7 +84,10 @@ async def chart_to_code(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
     reply = image_request_to_gpt(context.user_data["chart_photo"].file_path, prompt)
 
     if reply != 'NO CHART':
-        await update.message.reply_text(reply, parse_mode="Markdown")
+        try:
+            await update.message.reply_text(reply, parse_mode="Markdown")
+        except:
+            await update.message.reply_text(reply)
         await update.message.reply_text(
             "Если код не подходит, можно попробовать сгенерировать его заново.",
             reply_markup=markup_code_example,
