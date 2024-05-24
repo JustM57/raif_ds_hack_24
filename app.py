@@ -10,17 +10,13 @@ from telegram.ext import (
     filters,
 )
 
+from handlers.command_handlers import start, done
 from handlers.image_to_gpt_handlers import code_example_with_user_data, chart_to_code
 from handlers.text_to_gpt_handlers import code_example, receive_model_info
 from utils.helpers import CODE_EXAMPLE_WITH_USER_DATA, \
     FINAL_CODE_EXAMPLE, CODE_EXAMPLE, CHOOSING_MODEL, CHOOSING_MODEL_CLASS, \
     CHOOSING_DIRECTION, CHART_TO_CODE
 
-direction_buttons = [
-    ["Код графика по фото", "Справочник моделей"],
-    ["Done"],
-]
-markup_direction = ReplyKeyboardMarkup(direction_buttons, one_time_keyboard=True)
 
 model_class_buttons = [
     ["Классическое обучение с учителем"],
@@ -47,22 +43,6 @@ chart_load_buttons = [
     ["Загрузить фото графика", "Назад", "Done"],
 ]
 markup_chart_load = ReplyKeyboardMarkup(chart_load_buttons, one_time_keyboard=True)
-
-
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Start the conversation and ask user for input."""
-    await update.message.reply_text(
-        "Привет! Что хочешь изучить?",
-        reply_markup=markup_direction,
-    )
-
-    return CHOOSING_DIRECTION
-
-
-async def back_to_direction(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Back to CHOOSING_DIRECTION."""
-
-    return CHOOSING_DIRECTION
 
 
 async def first_stage(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -126,19 +106,6 @@ async def load_chart(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     )
 
     return CHART_TO_CODE
-
-
-async def done(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Display the gathered info and end the conversation."""
-    user_data = context.user_data
-
-    await update.message.reply_text(
-        f"Был рад помочь, заходи еще!",
-        reply_markup=ReplyKeyboardRemove(),
-    )
-
-    user_data.clear()
-    return ConversationHandler.END
 
 
 def main() -> None:

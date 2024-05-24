@@ -29,7 +29,7 @@ def text_request_to_gpt(user_prompt, system_prompt):
         messages=[{"role": "system", "content": system_prompt},
                   {"role": "user", "content": user_prompt}],
         max_tokens=1024,
-        temperature=0.1,
+        temperature=0.2,
     )
     reply = response.choices[0].message.content.strip()
 
@@ -39,18 +39,20 @@ def text_request_to_gpt(user_prompt, system_prompt):
 async def receive_model_info(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Store info provided by user and ask for the next category."""
     text = update.message.text
-    if text == "Назад":
-        text = context.user_data["model"]
-    context.user_data["model"] = text
+    if text != "Назад":
+        # text = context.user_data["model"]
+        context.user_data["model"] = text
 
-    if not text == "Назад":
-        await update.message.reply_text(f"Генерирую информацию по теме `{text}`...\nНеобходимо немного подождать.")
-        prompt = f"Break down {text} topic in machine learning into smaller, easier-to-understand parts. " \
+        await update.message.reply_text(f"Генерирую информацию по теме `{context.user_data['model']}`"
+                                        "\nНеобходимо немного подождать.⏳")
+        prompt = f"Break down {context.user_data['model']} topic in machine learning into smaller, easier-to-understand parts. " \
                  "Use formulas and examples of data to explain applicability. " \
                  "When I should use this machine learning model?"
         print(prompt)
 
-        system_prompt = "Give answer in Russian language. Do not use latex formatting in formulas, try more human readable format but formulas are very important. "
+        system_prompt = "Give answer in Russian language. Do not use inline mathematical expressions in formulas. "\
+                        "Try more human readable format in formulas. For example while answering pere-phrase formulas like this "\
+                        "<$F = x_1 + x_2 + frac{1}{1 + e^x}$> to formulas like this <`F = x1 + x2 + 1/(1 + e^x)`>."
         reply = text_request_to_gpt(prompt, system_prompt)
 
         await update.message.reply_text(reply, parse_mode="Markdown")
@@ -70,8 +72,8 @@ async def code_example(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     context.user_data["code_example"] = text
 
     if text == "Посмотреть пример кода" or text == "Посмотреть другой пример":
-        await update.message.reply_text(f"Генерирую пример кода для модели {context.user_data['model']}... "
-                                        "\nНеобходимо немного подождать.")
+        await update.message.reply_text(f"Генерирую пример кода для модели `{context.user_data['model']}` "
+                                        "\nНеобходимо немного подождать.⏳")
 
         prompt = f"Provide an example on how to build solution using machine learning model {context.user_data['model']}. " \
                  "Start with providing data sample, correct preprocessing and end with getting predictions with the model."

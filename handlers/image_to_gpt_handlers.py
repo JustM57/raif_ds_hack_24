@@ -40,8 +40,8 @@ async def code_example_with_user_data(update: Update, context: ContextTypes.DEFA
         image_file = await context.bot.get_file(update.message.photo[-1].file_id)
         context.user_data["photo"] = image_file
 
-    await update.message.reply_text(f"Генерирую пример кода для модели {context.user_data['model']}... "
-                                    "\nНеобходимо немного подождать.")
+    await update.message.reply_text(f"Генерирую пример кода для модели {context.user_data['model']} "
+                                    "\nНеобходимо немного подождать.⏳")
 
     prompt = f"Provide an example on how to build solution using machine learning model {context.user_data['model']}. " \
              "If the image contains the dataset then use it as input data sample for the problem solution. " \
@@ -71,8 +71,8 @@ async def chart_to_code(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
         image_file = await context.bot.get_file(update.message.photo[-1].file_id)
         context.user_data["chart_photo"] = image_file
 
-    await update.message.reply_text(f"Генерирую код для построения графика... "
-                                    "\nНеобходимо немного подождать.")
+    await update.message.reply_text(f"Генерирую код для построения графика "
+                                    "\nНеобходимо немного подождать.⏳")
 
     prompt = f"If the image contains the chart on it then return python code how to plot such chart, "\
              "what data should look like to be able to plot the chart and the preview of it. "\
