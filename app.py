@@ -13,31 +13,18 @@ from telegram.ext import (
 from handlers.command_handlers import start, done
 from handlers.image_to_gpt_handlers import code_example_with_user_data, chart_to_code
 from handlers.text_to_gpt_handlers import code_example, receive_model_info
+from utils.ds_models import keys_to_response, MODELS, items_to_response, keys_to_filter
 from utils.helpers import CODE_EXAMPLE_WITH_USER_DATA, \
     FINAL_CODE_EXAMPLE, CODE_EXAMPLE, CHOOSING_MODEL, CHOOSING_MODEL_CLASS, \
     CHOOSING_DIRECTION, CHART_TO_CODE
 
 
-model_class_buttons = [
-    ["Классическое обучение с учителем"],
-    ["Рекомендательные системы"],
-    ["..."],
-    ["Назад"],
-]
-markup_model_classes = ReplyKeyboardMarkup(model_class_buttons, one_time_keyboard=True)
+markup_model_classes = keys_to_response(MODELS)
 
 back_button = [
     ["Назад"],
 ]
 markup_back = ReplyKeyboardMarkup(back_button, one_time_keyboard=True)
-
-classic_models_buttons = [
-    ["Линейные модели", "Метрические методы"],
-    ["Решающие деревья", "Ансамбли в машинном обучении"],
-    ["Градиентный бустинг"],
-    ["Назад"],
-]
-markup_classic_models = ReplyKeyboardMarkup(classic_models_buttons, one_time_keyboard=True)
 
 chart_load_buttons = [
     ["Загрузить фото графика", "Назад", "Done"],
@@ -74,13 +61,7 @@ async def second_stage(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     if text == "Назад":
         text = context.user_data["second"]
     context.user_data["second"] = text
-    if text == "Классическое обучение с учителем":
-        reply_markup = markup_classic_models
-    elif text == "Рекомендательные системы" or text == "...":
-        # TODO: change markup
-        reply_markup = markup_back
-    else:
-        reply_markup = None
+    reply_markup = items_to_response(MODELS, text)
 
     await update.message.reply_text(
         f"Вы выбрали {text.lower()}! Какую модель изучим по-подробнее?",
@@ -134,7 +115,7 @@ def main() -> None:
             ],
             CHOOSING_MODEL_CLASS: [
                 MessageHandler(
-                    filters.Regex("^(Классическое обучение с учителем|Рекомендательные системы)$"), second_stage
+                    filters.Regex(keys_to_filter(MODELS)), second_stage
                 ),
                 MessageHandler(
                     filters.Regex("^Назад$"), start

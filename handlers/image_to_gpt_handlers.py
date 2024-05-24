@@ -10,7 +10,7 @@ from utils.helpers import CODE_EXAMPLE_WITH_USER_DATA, CHART_TO_CODE
 def image_request_to_gpt(image_file, prompt):
     response = client.chat.completions.create(
         model="gpt-4o",
-        messages=[{"role": "system", "content": "Give answer in Russian language and the code in python language."},
+        messages=[{"role": "system", "content": "Give answer in Russian language and the code in python language. Also do not use symbols `_`, `@` or `&`."},
             {
             "role": "user",
             "content": [

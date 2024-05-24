@@ -50,10 +50,16 @@ async def receive_model_info(update: Update, context: ContextTypes.DEFAULT_TYPE)
                  "When I should use this machine learning model?"
         print(prompt)
 
-        system_prompt = "Give answer in Russian language. Do not use inline mathematical expressions in formulas. "\
-                        "Try more human readable format in formulas. For example while answering pere-phrase formulas like this "\
+        system_prompt = "Give answer in Russian language. Do not use symbols `_`, `@` or `&`. " \
+                        "Find all formulas in your answer and replace them " \
+                        "with human readable format. For example pere-phrase formulas like this " \
                         "<$F = x_1 + x_2 + frac{1}{1 + e^x}$> to formulas like this <`F = x1 + x2 + 1/(1 + e^x)`>."
         reply = text_request_to_gpt(prompt, system_prompt)
+
+        # controling_prompt = "Do not change content of this text. Find all formulas in it and replace them " \
+        #                 "with human readable format. For example pere-phrase formulas like this " \
+        #                 "<$F = x_1 + x_2 + frac{1}{1 + e^x}$> to formulas like this <`F = x1 + x2 + 1/(1 + e^x)`>."
+        # reply = text_request_to_gpt(reply, controling_prompt)
 
         await update.message.reply_text(reply, parse_mode="Markdown")
     await update.message.reply_text(
@@ -79,7 +85,7 @@ async def code_example(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
                  "Start with providing data sample, correct preprocessing and end with getting predictions with the model."
         print(prompt)
 
-        system_prompt = "Give answer in Russian language and the code in python language."
+        system_prompt = "Give answer in Russian language and the code in python language. Also do not use symbols `_`, `@` or `&`. "
         reply = text_request_to_gpt(prompt, system_prompt)
 
         await update.message.reply_text(reply, parse_mode="Markdown")
