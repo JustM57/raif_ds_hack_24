@@ -1,6 +1,11 @@
 # Предисловие
 
-Туториал поможет развернуть чат-бота Telegram, использующего API OpenAI, как локально, так и в Docker контейнере на облачном сервере.
+Repo template: https://github.com/dimadem/telegram_chatbot_w_media_boilerplate
+
+Дерево нашего бота:
+
+![bot_tree](bot_tree.png)
+
 
 Библиотеки:
 
